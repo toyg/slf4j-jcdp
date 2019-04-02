@@ -52,10 +52,10 @@ public class JcdpAdapterFactoryTest {
         Properties props = new Properties();
         props.put("jcdp.timestamp.enabled", "false");
         //props.put("jcdp.file.enabled", "false");
-        props.put("jcdp.level", "ERROR");
-        props.put("jcdp.ERROR.foreground", "BLACK");
-        props.put("jcdp.ERROR.background", "WHITE");
-        expectedERRORFormat = "\u001B[;" + Ansi.FColor.BLACK.getCode() + ";" + Ansi.BColor.WHITE.getCode() + "m";
+        props.put("jcdp.level", "WARN");
+        props.put("jcdp.ERROR.foreground", "WHITE");
+        props.put("jcdp.ERROR.background", "RED");
+        expectedERRORFormat = "\u001B[;" + Ansi.FColor.WHITE.getCode() + ";" + Ansi.BColor.RED.getCode() + "m";
         props.put("jcdp.WARN.foreground", "BLACK");
         props.put("jcdp.WARN.background", "YELLOW");
         expectedWARNFormat = "\u001B[;" + Ansi.FColor.BLACK.getCode() + ";" + Ansi.BColor.YELLOW.getCode() + "m";
@@ -87,7 +87,7 @@ public class JcdpAdapterFactoryTest {
         assertFalse(logger.isTraceEnabled());
         assertFalse(logger.isDebugEnabled());
         assertFalse(logger.isInfoEnabled());
-        assertFalse(logger.isWarnEnabled());
+        assertTrue(logger.isWarnEnabled());
         assertTrue(logger.isErrorEnabled());
 
 
@@ -104,7 +104,7 @@ public class JcdpAdapterFactoryTest {
     public void getLoggerApiTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // this tests for the existence of methods,
         // so in practice it's an slf4j-api-compliance test rather than a functionality one
-        // output should match the system preference, so ERROR only
+        // output should match the system preference, so WARN & ERROR only
 
         JcdpAdapterFactory factory = new JcdpAdapterFactory();
         Logger logger = factory.getLogger("Something");
