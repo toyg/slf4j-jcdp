@@ -30,6 +30,11 @@ import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
 
+/**
+ * This is the adapter that SLF4J will instantiate and use.
+ * It extends {@link org.slf4j.helpers.MarkerIgnoringBase} because
+ * JCDP has no concept of markers etc.
+ */
 public class JcdpAdapter extends MarkerIgnoringBase {
 
     final static String FQCN = JcdpAdapter.class.getName();
@@ -38,6 +43,15 @@ public class JcdpAdapter extends MarkerIgnoringBase {
     private boolean fileEnabled = false;
     private Printer filePrinter;
 
+    /** Constructor. One can provide an arbitrary number of printers,
+     * up to the maximum number of different levels in {@link JcdpLogLevel}.
+     * The order in which they are provided will match the order of levels.
+     * Any missing printer will be created as a default one.
+     *
+     * @param level {@link JcdpLogLevel} the logger will be set to
+     * @param printer {@link com.diogonunes.jcdp.color.ColoredPrinter} instances,
+     *                                                                in order matching log levels.
+     */
     JcdpAdapter(JcdpLogLevel level, ColoredPrinter... printer) {
         this.printers = new ColoredPrinter[6];
         // first slot is empty because level 0 would print all.
@@ -55,21 +69,41 @@ public class JcdpAdapter extends MarkerIgnoringBase {
         logLevel = level;
     }
 
+    /** support for File Printer is currently not in JCDP but it's planned....
+     *
+     * @param printer {@link com.diogonunes.jcdp.bw.Printer} instance wired to file
+     */
     public void setFilePrinter(Printer printer) {
         this.filePrinter = printer;
         fileEnabled = true;
     }
 
+    /** pick the printer for a given level
+     *
+     * @param level {@link JcdpLogLevel}
+     * @return {@link com.diogonunes.jcdp.color.ColoredPrinter} instance
+     */
     // kept only pkg-private so it can be tested
     ColoredPrinter getPrinter(JcdpLogLevel level) {
         return this.printers[level.getLevel()];
     }
 
+    /** log an actual message at the specified level
+     *
+     * @param msg {@link String}
+     * @param level {@link JcdpLogLevel}
+     */
     private void log(String msg, JcdpLogLevel level) {
         getPrinter(level).debugPrintln(msg, level.getLevel());
         if (fileEnabled) this.filePrinter.debugPrintln(msg, level.getLevel());
     }
 
+    /** log a full traceback of provided exception.
+     *
+     * @param msg {@link String} message
+     * @param t {@link Throwable} exception
+     * @param level {@link JcdpLogLevel}
+     */
     private void logTraceback(String msg, Throwable t, JcdpLogLevel level) {
         getPrinter(level).debugPrintln(msg, level.getLevel());
         getPrinter(level).debugPrintln("\t\t" + t.toString(), level.getLevel());
@@ -84,6 +118,8 @@ public class JcdpAdapter extends MarkerIgnoringBase {
             }
         }
     }
+
+    /* --- begin boring SLF4J wrappers --- */
 
     @Override
     public boolean isTraceEnabled() {

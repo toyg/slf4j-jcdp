@@ -33,10 +33,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Factory that SLF4J will call to retrieve a logger.
+ */
 public class JcdpAdapterFactory implements ILoggerFactory {
 
-    private final List<String> validFColors = Arrays.stream(Ansi.FColor.values()).map(Ansi.FColor::toString).collect(Collectors.toList());
-    private final List<String> validBColors = Arrays.stream(Ansi.BColor.values()).map(Ansi.BColor::toString).collect(Collectors.toList());
+    private final List<Ansi.FColor> validFColors = Arrays.stream(Ansi.FColor.values()).collect(Collectors.toList());
+    private final List<Ansi.BColor> validBColors = Arrays.stream(Ansi.BColor.values()).collect(Collectors.toList());
 
     public static boolean isTsEnabled() {
         return Boolean.valueOf(System.getProperty("jcdp.timestamp.enabled", "false"));
@@ -52,16 +55,31 @@ public class JcdpAdapterFactory implements ILoggerFactory {
 
         ColoredPrinter[] printers = new ColoredPrinter[6];
         for (JcdpLogLevel level : JcdpLogLevel.values()) {
-            String fConfig = System.getProperty("jcdp." + level.toString() + ".foreground", "BLACK");
-            String bConfig = System.getProperty("jcdp." + level.toString() + ".background", "WHITE");
+            // retrieve the codes
+            String bConfig = System.getProperty("jcdp." + level.toString() + ".background", "BLACK");
+            String fConfig = System.getProperty("jcdp." + level.toString() + ".foreground", "WHITE");
+            Object[] colors = new Object[2];
+            try {
+                colors[0] = Ansi.BColor.valueOf(bConfig);
+                colors[1] = Ansi.FColor.valueOf(fConfig);
+            } catch (IllegalArgumentException iae) {
+                // defaults
+                if (colors[0] == null) colors[0] = Ansi.BColor.BLACK;
+                if (colors[1] == null) colors[1] = Ansi.FColor.WHITE;
+            }
+            // build the printer
             ColoredPrinter printer = new ColoredPrinter.Builder(enabledLevel.getLevel(), tsEnabled)
-                    .foreground(Ansi.FColor.valueOf(fConfig))
-                    .background(Ansi.BColor.valueOf(bConfig))
+                    .background((Ansi.BColor) colors[0])
+                    .foreground((Ansi.FColor) colors[1])
                     .build();
+            // ensure level is set - I've seen weird bugs
             printer.setLevel(enabledLevel.getLevel());
+            // push where it belongs
             printers[level.getLevel()] = printer;
         }
+        // create the adapter
         JcdpAdapter adapter = new JcdpAdapter(enabledLevel, printers);
+        // file support, eventually
         if (fileEnabled) {
             adapter.error("Printing to file is not supported yet. " +
                     "Give us a hand at https://github.com/dialex/JCDP ");

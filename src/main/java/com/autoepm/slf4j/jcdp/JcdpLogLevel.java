@@ -24,6 +24,12 @@
 
 package com.autoepm.slf4j.jcdp;
 
+/**
+ * SLF4J log levels, matched to numbers (what JCDP uses).
+ * JCDP will print anything at level lower or equal to the one set in logger.
+ * <p>
+ * Level 0 prints everything and is not used.
+ */
 public enum JcdpLogLevel {
     // note that level 0 in JCDP prints everything, so we don't use it
     ERROR(1),
