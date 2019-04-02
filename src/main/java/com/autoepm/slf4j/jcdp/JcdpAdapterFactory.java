@@ -38,6 +38,11 @@ public class JcdpAdapterFactory implements ILoggerFactory {
     private final List<String> validFColors = Arrays.stream(Ansi.FColor.values()).map(Ansi.FColor::toString).collect(Collectors.toList());
     private final List<String> validBColors = Arrays.stream(Ansi.BColor.values()).map(Ansi.BColor::toString).collect(Collectors.toList());
 
+    public static boolean isTsEnabled() {
+        return Boolean.valueOf(System.getProperty("jcdp.timestamp.enabled", "false"));
+    }
+
+
     @Override
     public Logger getLogger(String name) {
         // get basic config from somewhere -- for now I'll hack it into sysprops...

@@ -39,12 +39,17 @@ public class JcdpAdapter extends MarkerIgnoringBase {
     private Printer filePrinter;
 
     JcdpAdapter(JcdpLogLevel level, ColoredPrinter... printer) {
-        this.printers = new ColoredPrinter[5];
-        for (int i = 0; i < this.printers.length; i++) {
+        this.printers = new ColoredPrinter[6];
+        // first slot is empty because level 0 would print all.
+        // could reuse for file printer at some point
+        for (int i = 1; i < this.printers.length; i++) {
             if (printer.length >= i + 1) {
                 this.printers[i] = printer[i];
             } else {
-                this.printers[i] = new ColoredPrinter.Builder(i, true).build();
+                this.printers[i] = new ColoredPrinter.Builder(
+                        level.getLevel(), JcdpAdapterFactory.isTsEnabled()
+                ).build();
+                this.printers[i].setLevel(level.getLevel());
             }
         }
         logLevel = level;
@@ -55,7 +60,8 @@ public class JcdpAdapter extends MarkerIgnoringBase {
         fileEnabled = true;
     }
 
-    private ColoredPrinter getPrinter(JcdpLogLevel level) {
+    // kept only pkg-private so it can be tested
+    ColoredPrinter getPrinter(JcdpLogLevel level) {
         return this.printers[level.getLevel()];
     }
 
@@ -66,15 +72,18 @@ public class JcdpAdapter extends MarkerIgnoringBase {
 
     private void logTraceback(String msg, Throwable t, JcdpLogLevel level) {
         getPrinter(level).debugPrintln(msg, level.getLevel());
-        getPrinter(level).debugPrint("original exception was: ");
-        getPrinter(level).debugPrintln(t.getMessage(), level.getLevel());
+        getPrinter(level).debugPrintln("\t\t" + t.toString(), level.getLevel());
+        for (StackTraceElement line : t.getStackTrace()) {
+            getPrinter(level).debugPrintln("\t\t" + line.toString(), level.getLevel());
+        }
         if (fileEnabled) {
             this.filePrinter.debugPrintln(msg, level.getLevel());
-            this.filePrinter.debugPrint("original exception was: ");
-            this.filePrinter.debugPrintln(t.getMessage(), level.getLevel());
+            this.filePrinter.debugPrintln("\t\t" + t.toString(), level.getLevel());
+            for (StackTraceElement line : t.getStackTrace()) {
+                this.filePrinter.debugPrintln("\t\t" + line.toString(), level.getLevel());
+            }
         }
     }
-
 
     @Override
     public boolean isTraceEnabled() {
@@ -123,21 +132,18 @@ public class JcdpAdapter extends MarkerIgnoringBase {
     public void debug(String format, Object arg) {
         FormattingTuple ft = MessageFormatter.format(format, arg);
         log(ft.getMessage(), JcdpLogLevel.DEBUG);
-
     }
 
     @Override
     public void debug(String format, Object arg1, Object arg2) {
         FormattingTuple ft = MessageFormatter.format(format, arg1, arg2);
         log(ft.getMessage(), JcdpLogLevel.DEBUG);
-
     }
 
     @Override
     public void debug(String format, Object... arguments) {
         FormattingTuple ft = MessageFormatter.arrayFormat(format, arguments);
         log(ft.getMessage(), JcdpLogLevel.DEBUG);
-
     }
 
     @Override
@@ -153,14 +159,12 @@ public class JcdpAdapter extends MarkerIgnoringBase {
     @Override
     public void info(String msg) {
         log(msg, JcdpLogLevel.INFO);
-
     }
 
     @Override
     public void info(String format, Object arg) {
         FormattingTuple ft = MessageFormatter.format(format, arg);
         log(ft.getMessage(), JcdpLogLevel.INFO);
-
     }
 
     @Override
@@ -173,7 +177,6 @@ public class JcdpAdapter extends MarkerIgnoringBase {
     public void info(String format, Object... arguments) {
         FormattingTuple ft = MessageFormatter.arrayFormat(format, arguments);
         log(ft.getMessage(), JcdpLogLevel.INFO);
-
     }
 
     @Override
@@ -189,7 +192,6 @@ public class JcdpAdapter extends MarkerIgnoringBase {
     @Override
     public void warn(String msg) {
         log(msg, JcdpLogLevel.WARN);
-
     }
 
     @Override
@@ -202,7 +204,6 @@ public class JcdpAdapter extends MarkerIgnoringBase {
     public void warn(String format, Object arg1, Object arg2) {
         FormattingTuple ft = MessageFormatter.format(format, arg1, arg2);
         log(ft.getMessage(), JcdpLogLevel.WARN);
-
     }
 
     @Override
