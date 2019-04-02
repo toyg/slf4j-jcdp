@@ -43,16 +43,17 @@ public class JcdpAdapterFactory implements ILoggerFactory {
         // get basic config from somewhere -- for now I'll hack it into sysprops...
         boolean tsEnabled = Boolean.valueOf(System.getProperty("jcdp.timestamp.enabled", "false"));
         boolean fileEnabled = Boolean.valueOf(System.getProperty("jcdp.file.enabled", "false"));
-        JcdpLogLevel enabledLevel = JcdpLogLevel.valueOf(System.getProperty("jcdp.level", "INFO"));
+        JcdpLogLevel enabledLevel = JcdpLogLevel.valueOf(System.getProperty("jcdp.level", "INFO").toUpperCase());
 
-        ColoredPrinter[] printers = new ColoredPrinter[5];
+        ColoredPrinter[] printers = new ColoredPrinter[6];
         for (JcdpLogLevel level : JcdpLogLevel.values()) {
-            String fConfig = System.getProperty("jcdp." + level.getLevel() + ".foreground", "BLACK");
-            String bConfig = System.getProperty("jcdp." + level.getLevel() + ".background", "WHITE");
-            ColoredPrinter printer = new ColoredPrinter.Builder(level.getLevel(), true)
+            String fConfig = System.getProperty("jcdp." + level.toString() + ".foreground", "BLACK");
+            String bConfig = System.getProperty("jcdp." + level.toString() + ".background", "WHITE");
+            ColoredPrinter printer = new ColoredPrinter.Builder(enabledLevel.getLevel(), tsEnabled)
                     .foreground(Ansi.FColor.valueOf(fConfig))
                     .background(Ansi.BColor.valueOf(bConfig))
                     .build();
+            printer.setLevel(enabledLevel.getLevel());
             printers[level.getLevel()] = printer;
         }
         JcdpAdapter adapter = new JcdpAdapter(enabledLevel, printers);
