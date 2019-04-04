@@ -39,10 +39,19 @@ import java.util.stream.Collectors;
  */
 public class JcdpAdapterFactory implements ILoggerFactory {
 
+    /**
+     * whether each line should be prefixed by a timestamp
+     *
+     * @return boolean
+     */
     public static boolean isTsEnabled() {
         return Boolean.valueOf(System.getProperty("jcdp.timestamp.enabled", "false"));
     }
 
+    /** property initialization. Currently all properties are retrieved from System if they start with 'jcdp.'
+     *
+     * @return {@link java.util.Properties} containing only JCDP-related properties.
+     */
     private Properties loadProperties() {
         // get basic config from somewhere -- for now I'll hack it into sysprops...
         Set<String> sysprops = System.getProperties().stringPropertyNames();
@@ -55,6 +64,11 @@ public class JcdpAdapterFactory implements ILoggerFactory {
     }
 
 
+    /** main SLF4J factory method
+     *
+     * @param name logger name (currently ignored)
+     * @return {@link JcdpAdapter} instance that implements the {@link org.slf4j.Logger} interface
+     */
     @Override
     public Logger getLogger(String name) {
         Properties props = loadProperties(); // reloaded every time so we can change in-flight
