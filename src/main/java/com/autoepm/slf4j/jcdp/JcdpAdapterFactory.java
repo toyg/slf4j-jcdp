@@ -64,6 +64,7 @@ public class JcdpAdapterFactory implements ILoggerFactory {
         JcdpLogLevel enabledLevel = JcdpLogLevel.valueOf(props.getProperty("jcdp.level", "INFO").toUpperCase());
         boolean tsEnabled = Boolean.valueOf(props.getProperty("jcdp.timestamp.enabled", "false"));
         boolean fileEnabled = Boolean.valueOf(props.getProperty("jcdp.file.enabled", "false"));
+        JcdpLogLevel fileLogLevel = JcdpLogLevel.valueOf(props.getProperty("jcdp.file.level", "INFO").toUpperCase());
         File outputFile = new File(props.getProperty("jcdp.file.path", "tmp/test.txt"));
 
         ColoredPrinter[] printers = new ColoredPrinter[6];
@@ -95,7 +96,7 @@ public class JcdpAdapterFactory implements ILoggerFactory {
         // file support, eventually
         if (fileEnabled) {
             Printer p = new Printer.Builder(Printer.Types.FILE)
-                    .level(enabledLevel.getLevel())
+                    .level(fileLogLevel.getLevel())
                     .withFile(outputFile).build();
             adapter.setFilePrinter(p);
         }

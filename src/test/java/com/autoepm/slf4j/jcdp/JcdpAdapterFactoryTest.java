@@ -57,6 +57,7 @@ public class JcdpAdapterFactoryTest {
         Properties props = new Properties();
         props.put("jcdp.file.path", tempLog.getAbsolutePath());
         props.put("jcdp.file.enabled", "true");
+        props.put("jcdp.file.level", "DEBUG");
         props.put("jcdp.timestamp.enabled", "false");
         props.put("jcdp.level", "WARN");
         props.put("jcdp.ERROR.foreground", "WHITE");
@@ -79,7 +80,7 @@ public class JcdpAdapterFactoryTest {
 
     @After
     public void tearDown() throws Exception {
-        tempLog.delete();
+        //tempLog.delete();
     }
 
     /**
