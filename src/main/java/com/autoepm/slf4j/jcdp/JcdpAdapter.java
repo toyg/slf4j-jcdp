@@ -33,7 +33,7 @@ import org.slf4j.helpers.MessageFormatter;
 /**
  * This is the adapter that SLF4J will instantiate and use.
  * It extends {@link org.slf4j.helpers.MarkerIgnoringBase} because
- * JCDP has no concept of markers etc.
+ * JCDP has no concept of Markers.
  */
 public class JcdpAdapter extends MarkerIgnoringBase {
 
@@ -69,7 +69,7 @@ public class JcdpAdapter extends MarkerIgnoringBase {
         logLevel = level;
     }
 
-    /** support for File Printer is currently not in JCDP but it's planned....
+    /** support for File Printer is currently not in JCDP but it's planned...
      *
      * @param printer {@link com.diogonunes.jcdp.bw.Printer} instance wired to file
      */
