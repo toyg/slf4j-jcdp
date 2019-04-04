@@ -30,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -47,11 +48,16 @@ public class JcdpAdapterFactoryTest {
     private String expectedDEBUGFormat;
     private String expectedTRACEFormat;
 
+    private File tempLog;
+
     @Before
     public void setUp() throws Exception {
+        tempLog = File.createTempFile("test_", "_JcdpAdapterFactoryTest");
+        System.out.println(tempLog.getAbsolutePath());
         Properties props = new Properties();
+        props.put("jcdp.file.path", tempLog.getAbsolutePath());
+        props.put("jcdp.file.enabled", "true");
         props.put("jcdp.timestamp.enabled", "false");
-        //props.put("jcdp.file.enabled", "false");
         props.put("jcdp.level", "WARN");
         props.put("jcdp.ERROR.foreground", "WHITE");
         props.put("jcdp.ERROR.background", "RED");
@@ -73,6 +79,7 @@ public class JcdpAdapterFactoryTest {
 
     @After
     public void tearDown() throws Exception {
+        tempLog.delete();
     }
 
     /**
@@ -89,7 +96,7 @@ public class JcdpAdapterFactoryTest {
         assertFalse(logger.isInfoEnabled());
         assertTrue(logger.isWarnEnabled());
         assertTrue(logger.isErrorEnabled());
-
+        assertTrue(logger.isFileEnabled());
 
         assertEquals(logger.getPrinter(JcdpLogLevel.ERROR).generateCode(), expectedERRORFormat);
         assertEquals(logger.getPrinter(JcdpLogLevel.WARN).generateCode(), expectedWARNFormat);

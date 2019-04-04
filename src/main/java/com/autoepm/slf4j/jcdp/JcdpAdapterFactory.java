@@ -24,11 +24,13 @@
 
 package com.autoepm.slf4j.jcdp;
 
+import com.diogonunes.jcdp.bw.Printer;
 import com.diogonunes.jcdp.color.ColoredPrinter;
 import com.diogonunes.jcdp.color.api.Ansi;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -59,9 +61,10 @@ public class JcdpAdapterFactory implements ILoggerFactory {
     public Logger getLogger(String name) {
         Properties props = loadProperties(); // reloaded every time so we can change in-flight
 
+        JcdpLogLevel enabledLevel = JcdpLogLevel.valueOf(props.getProperty("jcdp.level", "INFO").toUpperCase());
         boolean tsEnabled = Boolean.valueOf(props.getProperty("jcdp.timestamp.enabled", "false"));
         boolean fileEnabled = Boolean.valueOf(props.getProperty("jcdp.file.enabled", "false"));
-        JcdpLogLevel enabledLevel = JcdpLogLevel.valueOf(props.getProperty("jcdp.level", "INFO").toUpperCase());
+        File outputFile = new File(props.getProperty("jcdp.file.path", "tmp/test.txt"));
 
         ColoredPrinter[] printers = new ColoredPrinter[6];
         for (JcdpLogLevel level : JcdpLogLevel.values()) {
@@ -91,10 +94,10 @@ public class JcdpAdapterFactory implements ILoggerFactory {
         JcdpAdapter adapter = new JcdpAdapter(enabledLevel, printers);
         // file support, eventually
         if (fileEnabled) {
-            adapter.error("Printing to file is not supported yet. " +
-                    "Give us a hand at https://github.com/dialex/JCDP ");
-            //Printer p = new Printer.Builder(Printer.Types.FILE).level(enabledLevel.getLevel()).build();
-            //adapter.setFilePrinter(p);
+            Printer p = new Printer.Builder(Printer.Types.FILE)
+                    .level(enabledLevel.getLevel())
+                    .withFile(outputFile).build();
+            adapter.setFilePrinter(p);
         }
         return adapter;
     }
