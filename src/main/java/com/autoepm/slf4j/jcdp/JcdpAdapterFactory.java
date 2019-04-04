@@ -29,8 +29,7 @@ import com.diogonunes.jcdp.color.api.Ansi;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,19 +44,31 @@ public class JcdpAdapterFactory implements ILoggerFactory {
         return Boolean.valueOf(System.getProperty("jcdp.timestamp.enabled", "false"));
     }
 
+    private Properties loadProperties() {
+        // get basic config from somewhere -- for now I'll hack it into sysprops...
+        Set<String> sysprops = System.getProperties().stringPropertyNames();
+        Map<Object, Object> jcdpPropsMap = System.getProperties().entrySet().stream()
+                .filter(entry -> entry.getKey().toString().startsWith("jcdp."))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Properties jcdpProps = new Properties();
+        jcdpProps.putAll(jcdpPropsMap);
+        return jcdpProps;
+    }
+
 
     @Override
     public Logger getLogger(String name) {
-        // get basic config from somewhere -- for now I'll hack it into sysprops...
-        boolean tsEnabled = Boolean.valueOf(System.getProperty("jcdp.timestamp.enabled", "false"));
-        boolean fileEnabled = Boolean.valueOf(System.getProperty("jcdp.file.enabled", "false"));
-        JcdpLogLevel enabledLevel = JcdpLogLevel.valueOf(System.getProperty("jcdp.level", "INFO").toUpperCase());
+        Properties props = loadProperties(); // reloaded every time so we can change in-flight
+
+        boolean tsEnabled = Boolean.valueOf(props.getProperty("jcdp.timestamp.enabled", "false"));
+        boolean fileEnabled = Boolean.valueOf(props.getProperty("jcdp.file.enabled", "false"));
+        JcdpLogLevel enabledLevel = JcdpLogLevel.valueOf(props.getProperty("jcdp.level", "INFO").toUpperCase());
 
         ColoredPrinter[] printers = new ColoredPrinter[6];
         for (JcdpLogLevel level : JcdpLogLevel.values()) {
             // retrieve the codes
-            String bConfig = System.getProperty("jcdp." + level.toString() + ".background", "BLACK");
-            String fConfig = System.getProperty("jcdp." + level.toString() + ".foreground", "WHITE");
+            String bConfig = props.getProperty("jcdp." + level.toString() + ".background", "BLACK");
+            String fConfig = props.getProperty("jcdp." + level.toString() + ".foreground", "WHITE");
             Object[] colors = new Object[2];
             try {
                 colors[0] = Ansi.BColor.valueOf(bConfig);
