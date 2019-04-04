@@ -29,16 +29,15 @@ import com.diogonunes.jcdp.color.api.Ansi;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Factory that SLF4J will call to retrieve a logger.
  */
 public class JcdpAdapterFactory implements ILoggerFactory {
-
-    private final List<Ansi.FColor> validFColors = Arrays.stream(Ansi.FColor.values()).collect(Collectors.toList());
-    private final List<Ansi.BColor> validBColors = Arrays.stream(Ansi.BColor.values()).collect(Collectors.toList());
 
     public static boolean isTsEnabled() {
         return Boolean.valueOf(System.getProperty("jcdp.timestamp.enabled", "false"));
