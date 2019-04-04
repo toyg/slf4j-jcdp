@@ -27,6 +27,9 @@ package com.autoepm.slf4j.jcdp;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.helpers.NOPServiceProvider;
 
+/**
+ * Service provider for modern SLF4J to load.
+ */
 public class JcdpProvider extends NOPServiceProvider {
     /**
      * Declare the version of the SLF4J API this implementation is compiled against.
