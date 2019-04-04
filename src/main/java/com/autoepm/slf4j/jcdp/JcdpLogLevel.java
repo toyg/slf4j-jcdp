@@ -44,6 +44,12 @@ public enum JcdpLogLevel {
         this.numLevel = numLevel;
     }
 
+    /**
+     * JCDP only understands numerical levels, so this can be used to map
+     * SLF4J values back to that
+     *
+     * @return int level
+     */
     public int getLevel() {
         return numLevel;
     }
