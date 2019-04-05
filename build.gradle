@@ -1,15 +1,30 @@
-plugins {
-    id 'java'
+// Bintray setup stuff
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+    }
 }
 
+plugins {
+    id 'java-library'
+}
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'java-library'
+
+// project details
 group 'com.autoepm'
-version '1.8.0-beta4'
+version '1.0.0-beta'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+// dependencies
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -18,6 +33,15 @@ dependencies {
     compile group: 'com.diogonunes', name: 'JCDP', version: '2.0.3.1'
 
 }
+
+// tasks
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version)
+    }
+}
+
 compileJava {
     if (!JavaVersion.toVersion(targetCompatibility).isJava9Compatible()) {
         excludes = ['**/module-info.java']
@@ -34,4 +58,41 @@ compileJava {
 compileTestJava{
     // if you want to see warnings...
     // options.compilerArgs << '-Xlint:unchecked'
+}
+
+javadoc {
+    if (!JavaVersion.toVersion(targetCompatibility).isJava9Compatible()) {
+        excludes = ['**/module-info.java']
+    }
+}
+
+// bintray plugin config
+bintray {
+    // Bintray username & api key
+    user = System.getProperty('bintray.user')
+    key = System.getProperty('bintray.key')
+    pkg {
+        // Bintray Repository
+        repo = 'slf4j-jcdp'
+        // Bintray Package
+        name = 'slf4j-jcdp'
+        // Bintray org
+        userOrg = 'autoepm'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/toyg/sl4j-jcdp.git'
+        desc = 'SLF4J adapter for JCDP'
+        version {
+            name = '1.0.0-SNAPSHOT'
+            desc = 'SLF4J adapter for JCDP'
+            //vcsTag = '1.0.0'
+            attributes = ['slf4j-jcdp': 'com.autoepm:slf4j-jcdp:slf4j-jcdp']
+            gpg {
+                sign = true
+                // passphrase for the private key. Keys are uploaded in the JFrog web interface
+                passphrase = System.getProperty('bintray.sigpwd') 
+            }
+        }
+        // magic to upload jars
+        configurations = ['archives']
+    }
 }
