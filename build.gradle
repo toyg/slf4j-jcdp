@@ -16,7 +16,7 @@ apply plugin: 'java-library'
 
 // project details
 group 'com.autoepm'
-version '1.0.0-beta'
+version '1.0.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -25,12 +25,17 @@ targetCompatibility = 1.8
 repositories {
     mavenCentral()
     jcenter()
+    maven {
+        url  "https://autoepm.bintray.com/jcdp"
+    }
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     implementation 'org.slf4j:slf4j-api:1.8.0-beta4'
-    compile group: 'com.diogonunes', name: 'JCDP', version: '2.0.3.1'
+    // re-enable original when/if FilePrinter is accepted
+    //compile group: 'com.diogonunes', name: 'JCDP', version: '2.0.3.1'
+    compile 'com.diogonunes:jcdp:2.1'
 
 }
 
@@ -82,7 +87,7 @@ bintray {
         vcsUrl = 'https://github.com/toyg/sl4j-jcdp.git'
         desc = 'SLF4J adapter for JCDP'
         version {
-            name = '1.0.0-SNAPSHOT'
+            name = '1.0.0'
             desc = 'SLF4J adapter for JCDP'
             //vcsTag = '1.0.0'
             attributes = ['slf4j-jcdp': 'com.autoepm:slf4j-jcdp:slf4j-jcdp']
