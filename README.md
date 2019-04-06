@@ -1,12 +1,33 @@
 SLF4J-JCDP
 ========
+[ ![Download](https://api.bintray.com/packages/autoepm/slf4j-jcdp/slf4j-jcdp/images/download.svg?version=1.0.0) ](https://bintray.com/autoepm/slf4j-jcdp/slf4j-jcdp/1.0.0/link)
+
 An SLF4J wrapper for [JCDP](https://github.com/dialex/JCDP), so you can log in colour!
 
 Note it's still pretty new and could do with better tests, but it seems to work.
-You can build it with Gradle (until I figure out how to upload it).
-
 You can even log to file  - see the [Log to file](#Log-to-file) section.
 
+# Setup
+
+Add the following to your gradle build:
+```gradle
+repositories {
+    jcenter()
+    maven {
+        url  "https://autoepm.bintray.com/jcdp"
+    }
+}
+
+dependencies {
+    // forked JCDP version with FilePrinter, might go away eventually
+    compile 'com.diogonunes:jcdp:2.1'
+    // slf4j adapter
+    compile 'com.autoepm:slf4j-jcdp:1.0.0'
+}
+```
+
+The custom maven repository is necessary because the version of JCDP we
+rely on is a (hopefully temporary) fork.
 
 # Configuration
 
@@ -36,13 +57,7 @@ Timestamp printing can be set with `jcdp.timestamp.enabled`, using true or false
 
 # Log to file
 
-If you want to *additionally* log to file, you must use:
-- [my modified JCDP "FilePrinter" branch](https://github.com/toyg/JCDP/tree/FilePrinter).
-- [the FilePrinter branch of this repo](https://github.com/toyg/slf4j-jcdp/tree/FilePrinter).
-
-Hopefully at some point my pull request will be merged and all this will get easier...
-
-If file printing is supported, you can configure it with the following properties:
+You can configure file printing with the following properties:
 ```
 jcdp.file.enabled=true
 jcdp.file.path=/path/to/your/output.log
