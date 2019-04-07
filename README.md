@@ -58,7 +58,7 @@ Timestamp printing can be set with `jcdp.timestamp.enabled`, using true or false
 # Log to file
 
 You can configure file printing with the following properties:
-```
+```properties
 jcdp.file.enabled=true
 jcdp.file.path=/path/to/your/output.log
 jcdp.file.level=INFO
