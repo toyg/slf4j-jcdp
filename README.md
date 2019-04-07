@@ -37,7 +37,7 @@ Debug level can be set with `jcdp.level`, using one of the acceptable SLF4J leve
 You can configure the foreground and background colors for each level by 
 setting any of the following System properties:
 
-```
+```properties
 jcdp.ERROR.foreground=WHITE
 jcdp.ERROR.background=RED
 jcdp.WARN.foreground=BLACK
@@ -58,7 +58,7 @@ Timestamp printing can be set with `jcdp.timestamp.enabled`, using true or false
 # Log to file
 
 You can configure file printing with the following properties:
-```
+```properties
 jcdp.file.enabled=true
 jcdp.file.path=/path/to/your/output.log
 jcdp.file.level=INFO
