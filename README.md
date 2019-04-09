@@ -7,27 +7,16 @@ An SLF4J wrapper for [JCDP](https://github.com/dialex/JCDP), so you can log in c
 Note it's still pretty new and could do with better tests, but it seems to work.
 You can even log to file  - see the [Log to file](#Log-to-file) section.
 
+# Compatibility
+
+* Java 8+.
+* Tested with SLF4J 1.8.0. It may or may not work with earlier versions.
+
 # Setup
 
-Add the following to your gradle build:
-```gradle
-repositories {
-    jcenter()
-    maven {
-        url  "https://autoepm.bintray.com/jcdp"
-    }
-}
+This version is compatible with mainline JCDP 2.0.x, which means it can *only* log to terminal.
 
-dependencies {
-    // forked JCDP version with FilePrinter, might go away eventually
-    compile 'com.diogonunes:jcdp:2.1'
-    // slf4j adapter
-    compile 'com.autoepm:slf4j-jcdp:1.0.0'
-}
-```
-
-The custom maven repository is necessary because the version of JCDP we
-rely on is a (hopefully temporary) fork.
+You will have to build it yourself. Look at build.gradle for information.
 
 # Configuration
 
@@ -54,15 +43,6 @@ Any level you don't configure will be set to foreground white and background bla
 
 
 Timestamp printing can be set with `jcdp.timestamp.enabled`, using true or false.
-
-# Log to file
-
-You can configure file printing with the following properties:
-```
-jcdp.file.enabled=true
-jcdp.file.path=/path/to/your/output.log
-jcdp.file.level=INFO
-```
 
 # Contributions
 

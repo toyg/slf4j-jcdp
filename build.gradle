@@ -26,9 +26,6 @@ targetCompatibility = 8
 repositories {
     mavenCentral()
     jcenter()
-    maven {
-        url  "https://autoepm.bintray.com/jcdp"
-    }
 }
 
 dependencies {
@@ -36,7 +33,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.8.0-beta4'
     // re-enable original when/if FilePrinter is accepted
     //compile group: 'com.diogonunes', name: 'JCDP', version: '2.0.3.1'
-    compile 'com.diogonunes:jcdp:2.1'
+    compile 'com.diogonunes:jcdp:2.0.3.1'
 
 }
 
@@ -98,6 +95,3 @@ compileTestJava{
         excludes = ['**/module-info.java']
     }
 }
-
-// bintray plugin config
-apply from: 'publish.gradle'
