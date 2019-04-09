@@ -16,6 +16,9 @@ repositories {
     maven {
         url  "https://autoepm.bintray.com/jcdp"
     }
+    maven {
+    		url  "https://autoepm.bintray.com/slf4j-jcdp"
+    }
 }
 
 dependencies {
