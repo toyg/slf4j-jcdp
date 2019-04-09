@@ -13,8 +13,13 @@ Add the following to your gradle build:
 ```gradle
 repositories {
     jcenter()
+    // forked JCDP version with FilePrinter, might go away eventually
     maven {
         url  "https://autoepm.bintray.com/jcdp"
+    }
+    // slf4j-jcdp 
+    maven {
+        url  "https://autoepm.bintray.com/slf4j-jcdp"
     }
 }
 
