@@ -32,6 +32,9 @@ dependencies {
 The custom maven repository is necessary because the version of JCDP we
 rely on is a (hopefully temporary) fork.
 
+If you want to stick to mainline jcdp (i.e. only log to terminal), 
+you can manually build the JCDP-2.0-compatible branch.
+
 # Configuration
 
 Debug level can be set with `jcdp.level`, using one of the acceptable SLF4J levels 
