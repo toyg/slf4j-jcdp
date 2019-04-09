@@ -78,6 +78,10 @@ public class JcdpAdapter extends MarkerIgnoringBase {
         fileEnabled = true;
     }
 
+    public boolean isFileEnabled() {
+        return fileEnabled;
+    }
+
     /** pick the printer for a given level
      *
      * @param level {@link JcdpLogLevel}

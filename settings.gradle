@@ -1,2 +1,2 @@
 rootProject.name = 'slf4j-jcdp'
-
+enableFeaturePreview('STABLE_PUBLISHING')
