@@ -17,9 +17,10 @@ apply plugin: 'java-library'
 // project details
 group 'com.autoepm'
 version '1.0.0'
+ext.moduleName = 'com.autoepm.slf4j.jcdp'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 8
+targetCompatibility = 8
 
 // dependencies
 repositories {
@@ -39,30 +40,49 @@ dependencies {
 
 }
 
-// tasks
-jar {
-    manifest {
-        attributes('Implementation-Title': project.name,
-                'Implementation-Version': project.version)
-    }
-}
-
-compileJava {
-    if (!JavaVersion.toVersion(targetCompatibility).isJava9Compatible()) {
-        excludes = ['**/module-info.java']
-    } else { // set java9 to get a j9 build
-        doFirst {
-            options.compilerArgs = [
-                    '--module-path', classpath.asPath,
-            ]
-            classpath = files()
+sourceSets {
+    moduleInfo {
+        java {
+            srcDir 'src/module-info/java'
         }
     }
 }
 
-compileTestJava{
-    // if you want to see warnings...
-    // options.compilerArgs << '-Xlint:unchecked'
+// tasks
+
+// packaging
+jar {
+    inputs.property("moduleName", moduleName)
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Automatic-Module-Name': moduleName
+        )
+    }
+    // main is 8, moduleInfo is 9+
+    from sourceSets.main.output
+    from sourceSets.moduleInfo.output
+}
+
+// java8 target
+compileJava {
+    inputs.property("moduleName", moduleName)
+        excludes = ['**/module-info.java']
+}
+
+// Java 9+ target
+compileModuleInfoJava {
+    sourceCompatibility = 9
+    targetCompatibility = 9
+
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        classpath += sourceSets.main.compileClasspath
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+                '-d', sourceSets.main.output.classesDirs.asPath
+        ]
+    }
 }
 
 javadoc {
@@ -71,33 +91,13 @@ javadoc {
     }
 }
 
-// bintray plugin config
-bintray {
-    // Bintray username & api key
-    user = System.getProperty('bintray.user')
-    key = System.getProperty('bintray.key')
-    pkg {
-        // Bintray Repository
-        repo = 'slf4j-jcdp'
-        // Bintray Package
-        name = 'slf4j-jcdp'
-        // Bintray org
-        userOrg = 'autoepm'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/toyg/sl4j-jcdp.git'
-        desc = 'SLF4J adapter for JCDP'
-        version {
-            name = '1.0.0'
-            desc = 'SLF4J adapter for JCDP'
-            //vcsTag = '1.0.0'
-            attributes = ['slf4j-jcdp': 'com.autoepm:slf4j-jcdp:slf4j-jcdp']
-            gpg {
-                sign = true
-                // passphrase for the private key. Keys are uploaded in the JFrog web interface
-                passphrase = System.getProperty('bintray.sigpwd') 
-            }
-        }
-        // magic to upload jars
-        configurations = ['archives']
+compileTestJava{
+    // if you want to see warnings...
+    // options.compilerArgs << '-Xlint:unchecked'
+    if (!JavaVersion.toVersion(targetCompatibility).isJava9Compatible()) {
+        excludes = ['**/module-info.java']
     }
 }
+
+// bintray plugin config
+apply from: 'publish.gradle'
